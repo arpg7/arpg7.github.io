@@ -1,13 +1,21 @@
- body {
+/* Reset & Global Styles */
+* {
+  box-sizing: border-box;
+}
+
+body {
   margin: 0;
-  background: url('background .jpg') no-repeat center center fixed;
-  background-size: cover;
   font-family: sans-serif;
   overflow: hidden;
   touch-action: manipulation;
+  -ms-touch-action: manipulation;
   overscroll-behavior: contain;
+  min-height: 100dvh;
+  background: url('background .jpg') no-repeat center center fixed;
+  background-size: cover;
 }
 
+/* Desktop Background Override */
 @media (min-width: 768px) {
   body {
     background: url('background .jpg') no-repeat center center fixed;
@@ -15,13 +23,15 @@
   }
 }
 
+/* Game Container */
 .game-container {
   position: relative;
   width: 100vw;
-  height: 100vh;
+  height: 100dvh;
   overflow: hidden;
 }
 
+/* Score Display */
 #score {
   position: absolute;
   top: 2vh;
@@ -32,22 +42,23 @@
   text-shadow: 1px 1px 2px black;
 }
 
+/* Basket Styling */
 #basket {
   position: absolute;
   bottom: 5vh;
   left: 0;
-  width: 35vw;          /* increased from 25vw */
-  height: 28vh;         /* increased from 20vh */
-  max-height: 180px;    /* increased from 130px */
+  width: 35vw;
+  height: 28vh;
+  max-height: 180px;
   background: url('basket image.png') no-repeat center/contain;
 }
 
-
+/* Falling Items */
 .falling-item {
   position: absolute;
   width: 14vw;
-  max-width: 90px;
   height: 14vw;
+  max-width: 90px;
   max-height: 90px;
   background-size: contain;
   background-repeat: no-repeat;
@@ -55,6 +66,7 @@
   z-index: 5;
 }
 
+/* Touch Controls */
 .touch-controls {
   position: absolute;
   bottom: 2vh;
@@ -75,12 +87,13 @@
   transform: scale(1.1);
 }
 
+/* Overlay */
 .overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
-  height: 100vh;
+  height: 100dvh;
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(5px);
   display: flex;
@@ -97,7 +110,7 @@
   border-radius: 20px;
   text-align: center;
   background-color: rgba(255, 255, 255, 0.2);
-  color: #ffffff;
+  color: #fff;
   width: 70vw;
   max-width: 300px;
   outline: none;
@@ -117,6 +130,7 @@
   text-shadow: 0 0 3px black;
 }
 
+/* Responsive Overlay Inputs */
 @media (max-width: 400px) {
   .overlay input {
     font-size: 6vw;
@@ -138,13 +152,15 @@
   }
 }
 
+/* Game Over & Reward Screen */
 #gameOverScreen,
-#pizzaReward {
+#pizzaReward,
+#bombGameOverScreen {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
-  height: 100vh;
+  height: 100dvh;
   background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(4px);
   display: none;
@@ -174,11 +190,17 @@
   max-width: 90vw;
 }
 
+.game-over-box h2 {
+  font-size: 6vw;
+  margin-bottom: 2vh;
+}
+
 .game-over-box p {
   font-size: 4vw;
   margin-bottom: 1.5vh;
 }
 
+/* Button Rows */
 .button-row {
   margin-top: 3vh;
   display: flex;
@@ -194,19 +216,26 @@
   align-items: center;
 }
 
-.button-row img {
+.button-row img,
+#restartBtn,
+#infoBtn {
   width: 60px;
   height: 60px;
-  cursor: pointer;
+  object-fit: contain;
   transition: transform 0.2s ease;
+  cursor: pointer;
 }
 
-.button-row img:hover {
+.button-row img:hover,
+#restartBtn:hover,
+#infoBtn:hover {
   transform: scale(1.1);
 }
 
 @media (max-width: 480px) {
-  .button-row img {
+  .button-row img,
+  #restartBtn,
+  #infoBtn {
     width: 50px;
     height: 50px;
   }
@@ -220,6 +249,7 @@
   }
 }
 
+/* Heart/Lives Display */
 #hearts {
   position: absolute;
   top: 2vh;
@@ -236,10 +266,7 @@
   height: auto;
 }
 
-* {
-  box-sizing: border-box;
-}
-
+/* Input Name Field */
 #playerName {
   width: 80vw;
   max-width: 400px;
@@ -264,6 +291,7 @@
   }
 }
 
+/* Rewards */
 #dominosReward,
 #meeshoReward,
 #zeptoReward,
@@ -276,7 +304,7 @@
   display: none;
 }
 
-
+/* Reward Text */
 #rewardText {
   font-size: 2vw;
   text-shadow: 1px 1px 2px black;
@@ -297,7 +325,7 @@
   }
 }
 
-/* Buttons inside Pizza Box */
+/* Reward Buttons */
 #continueBtn,
 #redeemBtn {
   width: 90px;
@@ -345,42 +373,23 @@
     opacity: 0;
   }
 }
-    .level-image {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 70%;
-      max-width: 500px;
-      z-index: 999;
-      display: none;
-      animation: fadeInOut 2s ease-in-out forwards;
-    }
 
-    @keyframes fadeInOut {
-      0% { opacity: 0; }
-      20% { opacity: 1; }
-      80% { opacity: 1; }
-      100% { opacity: 0; display: none; }
-    }
-    #bombGameOverScreen {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(4px);
-  display: none;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
+/* Level Image Animation */
+.level-image {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 70%;
+  max-width: 500px;
   z-index: 999;
-  color: white;
-  font-size: 4vw;
+  display: none;
+  animation: fadeInOut 2s ease-in-out forwards;
 }
 
-#bombGameOverScreen .button-row img {
-  width: 60px;
-  height: 60px;
-} 
+@keyframes fadeInOut {
+  0% { opacity: 0; }
+  20% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { opacity: 0; display: none; }
+}
