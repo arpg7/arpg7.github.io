@@ -1,0 +1,386 @@
+body {
+  margin: 0;
+  background: url('background .jpg') no-repeat center center fixed;
+  background-size: cover;
+  font-family: sans-serif;
+  overflow: hidden;
+  touch-action: manipulation;
+  overscroll-behavior: contain;
+}
+
+@media (min-width: 768px) {
+  body {
+    background: url('background .jpg') no-repeat center center fixed;
+    background-size: cover;
+  }
+}
+
+.game-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+#score {
+  position: absolute;
+  top: 2vh;
+  left: 2vw;
+  font-size: 4vw;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 1px 1px 2px black;
+}
+
+#basket {
+  position: absolute;
+  bottom: 5vh;
+  left: 0;
+  width: 35vw;          /* increased from 25vw */
+  height: 28vh;         /* increased from 20vh */
+  max-height: 180px;    /* increased from 130px */
+  background: url('basket image.png') no-repeat center/contain;
+}
+
+
+.falling-item {
+  position: absolute;
+  width: 14vw;
+  max-width: 90px;
+  height: 14vw;
+  max-height: 90px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  z-index: 5;
+}
+
+.touch-controls {
+  position: absolute;
+  bottom: 2vh;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  z-index: 10;
+}
+
+.control-button {
+  width: 70px;
+  height: 70px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.control-button:hover {
+  transform: scale(1.1);
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  z-index: 999;
+}
+
+.overlay input {
+  font-size: 5vw;
+  padding: 1vw 3vw;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 20px;
+  text-align: center;
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  width: 70vw;
+  max-width: 300px;
+  outline: none;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.overlay input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 300;
+}
+
+.overlay p {
+  font-size: 4vw;
+  color: white;
+  margin-top: 2vh;
+  text-shadow: 0 0 3px black;
+}
+
+@media (max-width: 400px) {
+  .overlay input {
+    font-size: 6vw;
+    width: 80vw;
+  }
+
+  .overlay p {
+    font-size: 5vw;
+  }
+
+  #basket {
+    width: 28vw;
+    height: 22vh;
+  }
+
+  .falling-item {
+    width: 16vw;
+    height: 16vw;
+  }
+}
+
+#gameOverScreen,
+#pizzaReward {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  z-index: 999;
+  color: white;
+  font-size: 4vw;
+}
+
+#finalScoreText {
+  margin-bottom: 1vh;
+  text-align: center;
+  border: none;
+}
+
+.game-over-box {
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid #fff;
+  border-radius: 20px;
+  padding: 5vh 8vw;
+  text-align: center;
+  color: white;
+  font-family: sans-serif;
+  text-shadow: 1px 1px 3px black;
+  max-width: 90vw;
+}
+
+.game-over-box p {
+  font-size: 4vw;
+  margin-bottom: 1.5vh;
+}
+
+.button-row {
+  margin-top: 3vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+}
+
+.button-wrapper {
+  margin: 0 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.button-row img {
+  width: 60px;
+  height: 60px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.button-row img:hover {
+  transform: scale(1.1);
+}
+
+@media (max-width: 480px) {
+  .button-row img {
+    width: 50px;
+    height: 50px;
+  }
+
+  .button-wrapper {
+    margin: 0 20px;
+  }
+
+  .game-over-box p {
+    font-size: 5vw;
+  }
+}
+
+#hearts {
+  position: absolute;
+  top: 2vh;
+  right: 2vw;
+  display: flex;
+  gap: 0.5vw;
+  flex-wrap: wrap;
+  max-width: 45vw;
+}
+
+.heart {
+  width: 5vw;
+  max-width: 40px;
+  height: auto;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+#playerName {
+  width: 80vw;
+  max-width: 400px;
+  padding: 15px 20px;
+  font-size: 1.1em;
+  border: none;
+  border-radius: 30px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  outline: none;
+  margin-top: 20px;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+#playerName::placeholder {
+  color: #999;
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  #finalScoreText {
+    font-size: 9vw;
+  }
+}
+
+#dominosReward,
+#meeshoReward,
+#zeptoReward,
+#jobReward {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 999;
+  display: none;
+}
+
+
+#rewardText {
+  font-size: 2vw;
+  text-shadow: 1px 1px 2px black;
+  margin-bottom: 3vh;
+  padding: 0 2vw;
+  line-height: 1.6;
+  text-align: center;
+}
+
+#rewardText p {
+  margin: 1.5vh 0;
+}
+
+@media (max-width: 768px) {
+  #rewardText {
+    font-size: 4.5vw;
+    padding: 0 5vw;
+  }
+}
+
+/* Buttons inside Pizza Box */
+#continueBtn,
+#redeemBtn {
+  width: 90px;
+  height: 90px;
+  object-fit: contain;
+  transition: transform 0.2s ease;
+  cursor: pointer;
+}
+
+#continueBtn:hover,
+#redeemBtn:hover {
+  transform: scale(1.1);
+}
+
+@media (max-width: 600px) {
+  #continueBtn,
+  #redeemBtn {
+    width: 70px;
+    height: 70px;
+  }
+}
+
+/* Level Transition Animation */
+#levelTransition {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 999;
+  display: none;
+  animation: fadeScale 1.5s ease-in-out;
+}
+
+@keyframes fadeScale {
+  0% {
+    transform: translate(-50%, -50%) scale(0.6);
+    opacity: 0;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0;
+  }
+}
+    .level-image {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 70%;
+      max-width: 500px;
+      z-index: 999;
+      display: none;
+      animation: fadeInOut 2s ease-in-out forwards;
+    }
+
+    @keyframes fadeInOut {
+      0% { opacity: 0; }
+      20% { opacity: 1; }
+      80% { opacity: 1; }
+      100% { opacity: 0; display: none; }
+    }
+    #bombGameOverScreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  z-index: 999;
+  color: white;
+  font-size: 4vw;
+}
+
+#bombGameOverScreen .button-row img {
+  width: 60px;
+  height: 60px;
+}

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Fruit Catcher</title>
+  <link rel="stylesheet" href="game.css" />
+  <script defer src="game.js"></script>
+</head>
+<body>
+  <!-- Overlay: Player Name Entry -->
+
+
+  <!-- Game Area -->
+  <div class="game-container" style="display: none">
+    <div id="score">Score: 0</div>
+    <div id="hearts">
+      <img src="red heart.png" class="heart" />
+      <img src="red heart.png" class="heart" />
+      <img src="red heart.png" class="heart" />
+    </div>
+    <div id="basket"></div>
+
+    <!-- Touch Controls -->
+    <div class="touch-controls">
+      <img id="left-btn" src="left arrow.png" alt="Left" class="control-button" />
+      <img id="right-btn" src="right arrow.png" alt="Right" class="control-button" />
+    </div>
+
+    <!-- Sounds -->
+    <audio id="catch-sound" src="catch sound.mp3"></audio>
+    <audio id="crash-sound" src="crash sound.mp3"></audio>
+
+  </div>
+
+  <!-- Game Over Screen -->
+  <div id="gameOverScreen">
+    <div class="game-over-box">
+      <div id="finalScoreText">Your score: 0</div>
+      <div class="button-row">
+        <div class="button-wrapper">
+          <img id="restartBtn" src="restart button.png" alt="Restart" />
+        </div>
+        <div class="button-wrapper">
+          <a href="info.html">
+            <img id="infoBtn" src="info button.png" alt="Info" />
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Bomb Game Over Screen -->
+
+
+  <!-- Pizza Reward Screen -->
+<div id="dominosReward" style="display: none;">
+  <div class="game-over-box">
+    <div id="dominosRewardText">
+      <p><strong>You've unlocked a special discount at Domino's!</strong></p>
+      <p>Enjoy <span id="dominosOfferValue">X%</span> OFF on any Domino's offer.</p>
+      <p>Delicious deals, delivered hot!</p>
+    </div>
+    <div class="button-row">
+      <div class="button-wrapper">
+        <img id="dominosContinueBtn" src="continue button.png" alt="Continue" />
+      </div>
+<div class="button-wrapper">
+  <a href="home.html">
+    <img id="dominosHomeBtn" src="home button.png" alt="Home" />
+  </a>
+</div>
+
+    </div>
+  </div>
+</div>
+
+  <!-- Zepto Reward Screen -->
+<div id="zeptoReward" style="display: none;">
+  <div class="game-over-box">
+    <div id="zeptoRewardText">
+      <p><strong>You've unlocked a special discount on Zepto!</strong></p>
+      <p>Enjoy <span id="zeptoOfferValue">X%</span> OFF your groceries and essentials.</p>
+      <p>Speedy delivery, extra savings!</p>
+    </div>
+    <div class="button-row">
+      <div class="button-wrapper">
+        <img id="zeptoContinueBtn" src="continue button.png" alt="Continue" />
+      </div>
+      <div class="button-wrapper">
+        <a href ="home.html">
+        <img id="zeptoHomeBtn" src="home button.png" alt="Home" />
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Meesho Reward Screen -->
+<div id="meeshoReward" style="display: none;">
+  <div class="game-over-box">
+    <div id="meeshoRewardText">
+      <p><strong>You've unlocked an exclusive Meesho offer!</strong></p>
+      <p>Get <span id="meeshoOfferValue">X%</span> OFF on trending styles & products.</p>
+      <p>Shop more, save more. It’s that easy!</p>
+    </div>
+    <div class="button-row">
+      <div class="button-wrapper">
+        <img id="meeshoContinueBtn" src="continue button.png" alt="Continue" />
+      </div>
+      <div class="button-wrapper">
+        <a href="home.html">
+        <img id="meeshoHomeBtn" src="home button.png" alt="Home" />
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Job Reward Screen -->
+<div id="jobReward" style="display: none;">
+  <div class="game-over-box">
+    <div id="jobRewardText">
+      <p><strong>Congratulations! You've unlocked a Job Offer!</strong></p>
+      <p>Get <span id="jobOfferValue">7%</span> OFF on your dream career training pack.</p>
+      <p>Step closer to your future. Opportunity awaits!</p>
+    </div>
+    <div class="button-row">
+      <div class="button-wrapper">
+        <img id="jobContinueBtn" src="continue button.png" alt="Continue" />
+      </div>
+      <div class="button-wrapper">
+        <a href="home.html">
+        <img id="jobHomeBtn" src="home button.png" alt="Home" />
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  <!-- Level Transition Image -->
+  <div id="level-indicator" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 999;">
+  <img id="levelImage" src="" alt="Level" style="width: 300px; height: auto;" />
+</div>
+
+</body>
+</html>
