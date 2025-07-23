@@ -130,49 +130,51 @@
   </div>
 
   <script>
-    // 🛡️ Redirect if user not logged in
-    const storedData = JSON.parse(localStorage.getItem("userData"));
-    if (!storedData || !storedData.username || !storedData.phone) {
-      window.location.href = "login.html";
+
+  // 🛡️ Redirect if user not logged in
+  const storedData = JSON.parse(localStorage.getItem("currentUser"));
+  if (!storedData || !storedData.username || !storedData.mobile) {
+    window.location.href = "login.html";
+  }
+
+  const userData = storedData;
+
+  function showAccount() {
+    const box = document.getElementById("account-box");
+    const details = document.getElementById("account-details");
+    details.innerHTML = `Name: ${userData.username}<br>Phone: ${userData.mobile}`;
+    box.style.display = "block";
+  }
+
+  function closeAccount() {
+    document.getElementById("account-box").style.display = "none";
+  }
+
+  function toggleCart() {
+    const popup = document.getElementById("cart-popup");
+    const list = document.getElementById("cart-list");
+    list.innerHTML = "";
+
+    const caughtOffers = JSON.parse(localStorage.getItem("caughtOffers") || "[]");
+
+    if (caughtOffers.length === 0) {
+      list.innerHTML = "<li>Your cart is empty!</li>";
+    } else {
+      caughtOffers.forEach((item, index) => {
+        const li = document.createElement("li");
+        li.textContent = `${index + 1}. ${item.label} - ${item.value}`;
+        list.appendChild(li);
+      });
     }
 
-    // 🧠 Use stored user data
-    const userData = storedData;
+    popup.style.display = "block";
+  }
 
-    function showAccount() {
-      const box = document.getElementById("account-box");
-      const details = document.getElementById("account-details");
-      details.innerHTML = `Name: ${userData.username}<br>Phone: ${userData.phone}`;
-      box.style.display = "block";
-    }
+  function closeCart() {
+    document.getElementById("cart-popup").style.display = "none";
+  }
 
-    function closeAccount() {
-      document.getElementById("account-box").style.display = "none";
-    }
 
-    function toggleCart() {
-      const popup = document.getElementById("cart-popup");
-      const list = document.getElementById("cart-list");
-      list.innerHTML = "";
-
-      const caughtOffers = JSON.parse(localStorage.getItem("caughtOffers") || "[]");
-
-      if (caughtOffers.length === 0) {
-        list.innerHTML = "<li>Your cart is empty!</li>";
-      } else {
-        caughtOffers.forEach((item, index) => {
-          const li = document.createElement("li");
-          li.textContent = `${index + 1}. ${item.label} - ${item.value}`;
-          list.appendChild(li);
-        });
-      }
-
-      popup.style.display = "block";
-    }
-
-    function closeCart() {
-      document.getElementById("cart-popup").style.display = "none";
-    }
   </script>
 
 </body>
