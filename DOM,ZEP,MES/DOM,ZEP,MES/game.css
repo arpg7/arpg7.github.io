@@ -1,8 +1,14 @@
-body {
+/* ===== Base Reset ===== */
+* {
   margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: sans-serif;
+}
+
+body {
   background: url('background .jpg') no-repeat center center fixed;
   background-size: cover;
-  font-family: sans-serif;
   overflow: hidden;
   touch-action: manipulation;
   overscroll-behavior: contain;
@@ -10,7 +16,6 @@ body {
 
 @media (min-width: 768px) {
   body {
-    background: url('background .jpg') no-repeat center center fixed;
     background-size: cover;
   }
 }
@@ -22,27 +27,45 @@ body {
   overflow: hidden;
 }
 
+/* ===== Score & Hearts ===== */
 #score {
   position: absolute;
   top: 2vh;
   left: 2vw;
-  font-size: 4vw;
+  font-size: clamp(16px, 4vw, 24px);
   font-weight: bold;
   color: #fff;
   text-shadow: 1px 1px 2px black;
 }
 
+#hearts {
+  position: absolute;
+  top: 2vh;
+  right: 2vw;
+  display: flex;
+  gap: 0.5vw;
+  flex-wrap: wrap;
+  max-width: 45vw;
+}
+
+.heart {
+  width: 5vw;
+  max-width: 40px;
+  height: auto;
+}
+
+/* ===== Basket ===== */
 #basket {
   position: absolute;
   bottom: 5vh;
   left: 0;
-  width: 35vw;          /* increased from 25vw */
-  height: 28vh;         /* increased from 20vh */
-  max-height: 180px;    /* increased from 130px */
+  width: 35vw;
+  height: 28vh;
+  max-height: 180px;
   background: url('basket image.png') no-repeat center/contain;
 }
 
-
+/* ===== Falling Items ===== */
 .falling-item {
   position: absolute;
   width: 14vw;
@@ -55,6 +78,7 @@ body {
   z-index: 5;
 }
 
+/* ===== Touch Controls ===== */
 .touch-controls {
   position: absolute;
   bottom: 2vh;
@@ -75,6 +99,7 @@ body {
   transform: scale(1.1);
 }
 
+/* ===== Overlay Input ===== */
 .overlay {
   position: fixed;
   top: 0;
@@ -91,7 +116,7 @@ body {
 }
 
 .overlay input {
-  font-size: 5vw;
+  font-size: clamp(16px, 5vw, 22px);
   padding: 1vw 3vw;
   border: 2px solid rgba(255, 255, 255, 0.4);
   border-radius: 20px;
@@ -117,27 +142,7 @@ body {
   text-shadow: 0 0 3px black;
 }
 
-@media (max-width: 400px) {
-  .overlay input {
-    font-size: 6vw;
-    width: 80vw;
-  }
-
-  .overlay p {
-    font-size: 5vw;
-  }
-
-  #basket {
-    width: 28vw;
-    height: 22vh;
-  }
-
-  .falling-item {
-    width: 16vw;
-    height: 16vw;
-  }
-}
-
+/* ===== Game Over / Reward Screens ===== */
 #gameOverScreen,
 #pizzaReward {
   position: fixed;
@@ -169,7 +174,6 @@ body {
   padding: 5vh 8vw;
   text-align: center;
   color: white;
-  font-family: sans-serif;
   text-shadow: 1px 1px 3px black;
   max-width: 90vw;
 }
@@ -179,6 +183,7 @@ body {
   margin-bottom: 1.5vh;
 }
 
+/* ===== Buttons ===== */
 .button-row {
   margin-top: 3vh;
   display: flex;
@@ -205,6 +210,7 @@ body {
   transform: scale(1.1);
 }
 
+/* ===== Responsive Tweaks ===== */
 @media (max-width: 480px) {
   .button-row img {
     width: 50px;
@@ -220,50 +226,91 @@ body {
   }
 }
 
-#hearts {
-  position: absolute;
-  top: 2vh;
-  right: 2vw;
-  display: flex;
-  gap: 0.5vw;
-  flex-wrap: wrap;
-  max-width: 45vw;
-}
+@media (max-width: 360px) {
+  #score {
+    font-size: 6vw;
+  }
 
-.heart {
-  width: 5vw;
-  max-width: 40px;
-  height: auto;
-}
+  .heart {
+    width: 6vw;
+    max-width: 28px;
+  }
 
-* {
-  box-sizing: border-box;
-}
+  #basket {
+    width: 32vw;
+    height: 24vh;
+  }
 
-#playerName {
-  width: 80vw;
-  max-width: 400px;
-  padding: 15px 20px;
-  font-size: 1.1em;
-  border: none;
-  border-radius: 30px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-  outline: none;
-  margin-top: 20px;
-  font-family: 'Segoe UI', sans-serif;
-}
+  .falling-item {
+    width: 18vw;
+    height: 18vw;
+  }
 
-#playerName::placeholder {
-  color: #999;
-  font-style: italic;
-}
+  .control-button {
+    width: 60px;
+    height: 60px;
+  }
 
-@media (max-width: 768px) {
-  #finalScoreText {
-    font-size: 9vw;
+  .overlay input {
+    font-size: 5.5vw;
+    padding: 3vw;
+  }
+
+  .game-over-box p {
+    font-size: 6vw;
+  }
+
+  .button-row img {
+    width: 50px;
+    height: 50px;
+  }
+
+  #rewardText {
+    font-size: 5vw;
   }
 }
 
+@media (max-width: 320px) {
+  .heart {
+    width: 7vw;
+    max-width: 24px;
+  }
+
+  #basket {
+    width: 36vw;
+    height: 22vh;
+  }
+
+  .falling-item {
+    width: 20vw;
+    height: 20vw;
+  }
+
+  .control-button {
+    width: 50px;
+    height: 50px;
+  }
+
+  .overlay input {
+    font-size: 6vw;
+    width: 90vw;
+  }
+
+  .game-over-box p {
+    font-size: 6.5vw;
+  }
+
+  .button-row img {
+    width: 44px;
+    height: 44px;
+  }
+
+  #rewardText {
+    font-size: 6vw;
+  }
+}
+
+/* ===== Rewards ===== */
 #dominosReward,
 #meeshoReward,
 #zeptoReward,
@@ -275,7 +322,6 @@ body {
   z-index: 999;
   display: none;
 }
-
 
 #rewardText {
   font-size: 2vw;
@@ -297,7 +343,7 @@ body {
   }
 }
 
-/* Buttons inside Pizza Box */
+/* ===== Continue / Redeem Buttons ===== */
 #continueBtn,
 #redeemBtn {
   width: 90px;
@@ -320,7 +366,7 @@ body {
   }
 }
 
-/* Level Transition Animation */
+/* ===== Level Transition Animation ===== */
 #levelTransition {
   position: absolute;
   top: 50%;
@@ -345,25 +391,27 @@ body {
     opacity: 0;
   }
 }
-    .level-image {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 70%;
-      max-width: 500px;
-      z-index: 999;
-      display: none;
-      animation: fadeInOut 2s ease-in-out forwards;
-    }
 
-    @keyframes fadeInOut {
-      0% { opacity: 0; }
-      20% { opacity: 1; }
-      80% { opacity: 1; }
-      100% { opacity: 0; display: none; }
-    }
-    #bombGameOverScreen {
+.level-image {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 70%;
+  max-width: 500px;
+  z-index: 999;
+  display: none;
+  animation: fadeInOut 2s ease-in-out forwards;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; }
+  20% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { opacity: 0; display: none; }
+}
+
+#bombGameOverScreen {
   position: fixed;
   top: 0;
   left: 0;
