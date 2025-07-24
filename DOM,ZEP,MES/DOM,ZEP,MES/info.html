@@ -27,6 +27,8 @@
         background-size: cover;
       }
     }
+   
+
 
     .container {
       background-color: rgba(0, 0, 0, 0.6);
@@ -51,25 +53,7 @@
       text-align: justify; /* <-- Add this line */
     }
 
-    #backBtn {
-  margin-top: 25px;
-  padding: 12px 30px;
-  font-size: 1.2em;
-  border: none;
-  border-radius: 30px;
-  background-color: #00ffff; /* Neon cyan */
-  color: #000;
-  font-weight: bold;
-  cursor: pointer;
-  box-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
-  transition: all 0.3s ease;
-}
 
-#backBtn:hover {
-  background-color: #1fffff;
-  transform: scale(1.05);
-  box-shadow: 0 0 15px #00ffff, 0 0 25px #00ffff;
-}
 
 
     @media (max-width: 768px) {
@@ -96,7 +80,17 @@
     <li>🎯 <span>Stay sharp and catch smart!</span></li>
   </ul>
 
-  <button id="backBtn" onclick="window.location.href='game.html'">Back to Game</button>
-  </div>
+<div style="display: flex; justify-content: center; gap: 60px; align-items: center; margin-top: 25px;">
+  <button onclick="window.location.href='game.html'" style="all: unset; cursor: pointer;">
+    <img src="back button.png" alt="Back" style="width: 60px; height: 60px;">
+  </button>
+
+  <button onclick="window.location.href='home.html'" style="all: unset; cursor: pointer;">
+    <img src="home button.png" alt="Home" style="width: 60px; height: 60px;">
+  </button>
+</div>
+
+
+
 </body>
 </html>
