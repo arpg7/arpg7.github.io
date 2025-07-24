@@ -132,8 +132,7 @@
     <button onclick="closeAccount()">Close</button>
   </div>
 
-  <script>
-
+<script>
   // 🛡️ Redirect if user not logged in
   const storedData = JSON.parse(localStorage.getItem("currentUser"));
   if (!storedData || !storedData.username || !storedData.mobile) {
@@ -143,6 +142,9 @@
   const userData = storedData;
 
   function showAccount() {
+    // Hide cart popup first
+    document.getElementById("cart-popup").style.display = "none";
+
     const box = document.getElementById("account-box");
     const details = document.getElementById("account-details");
     details.innerHTML = `Name: ${userData.username}<br>Phone: ${userData.mobile}`;
@@ -154,34 +156,35 @@
   }
 
   function toggleCart() {
-  const popup = document.getElementById("cart-popup");
-  const list = document.getElementById("cart-list");
-  list.innerHTML = "";
+    // Hide account popup first
+    document.getElementById("account-box").style.display = "none";
 
-  const mobile = userData?.mobile || "";
-  const rewardKey = `caughtOffers_${mobile}`;
-  const caughtOffers = JSON.parse(localStorage.getItem(rewardKey) || "[]");
+    const popup = document.getElementById("cart-popup");
+    const list = document.getElementById("cart-list");
+    list.innerHTML = "";
 
-  if (caughtOffers.length === 0) {
-    list.innerHTML = "<li>Your cart is empty!</li>";
-  } else {
-    caughtOffers.forEach((item, index) => {
-      const li = document.createElement("li");
-      li.textContent = `${index + 1}. ${item.label} - ${item.value}`;
-      list.appendChild(li);
-    });
+    const mobile = userData?.mobile || "";
+    const rewardKey = `caughtOffers_${mobile}`;
+    const caughtOffers = JSON.parse(localStorage.getItem(rewardKey) || "[]");
+
+    if (caughtOffers.length === 0) {
+      list.innerHTML = "<li>Your cart is empty!</li>";
+    } else {
+      caughtOffers.forEach((item, index) => {
+        const li = document.createElement("li");
+        li.textContent = `${index + 1}. ${item.label} - ${item.value}`;
+        list.appendChild(li);
+      });
+    }
+
+    popup.style.display = "block";
   }
-
-  popup.style.display = "block";
-}
-
 
   function closeCart() {
     document.getElementById("cart-popup").style.display = "none";
   }
+</script>
 
-
-  </script>
 
 </body>
 </html>
