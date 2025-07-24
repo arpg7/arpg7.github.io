@@ -109,10 +109,10 @@ document.addEventListener('keydown', moveBasket);
 });
 
 function checkLevelTransition() {
-  const levels = [180, 150, 120, 100, 70, 40, 20];
+  const levels = [250, 220, 200, 180, 150, 120, 100, 70, 40, 20, 0]; // 11 levels
   for (let i = 0; i < levels.length; i++) {
-    if (score >= levels[i] && currentLevel < 8 - i) {
-      currentLevel = 8 - i;
+    if (score >= levels[i] && currentLevel < 11 - i) {
+      currentLevel = 11 - i;
       maxLives = Math.min(2 + currentLevel, 10);
       resetLevelCounts();
       showLevelImage(currentLevel);
@@ -128,10 +128,20 @@ function checkLevelTransition() {
   }
 }
 
+
 function createItem() {
   if (gameEnded || gamePaused) return;
 
-  const itemsToDrop = Math.floor(Math.random() * 2) + 1;
+ let itemsToDrop = 2;
+if (currentLevel <= 2) {
+  itemsToDrop = Math.floor(Math.random() * 2) + 1; // 1-2 items
+} else if (currentLevel <= 4) {
+  itemsToDrop = Math.floor(Math.random() * 2) + 2; // 2-3 items
+} else if (currentLevel <= 6) {
+  itemsToDrop = Math.floor(Math.random() * 3) + 2; // 2-4 items
+} else {
+  itemsToDrop = Math.floor(Math.random() * 3) + 3; // 3-5 items
+}
 
   for (let i = 0; i < itemsToDrop; i++) {
     const posX = Math.random() * (window.innerWidth - 80);
@@ -149,11 +159,21 @@ function createItem() {
 
 const dropPizzaNow = (currentLevel === 3 || currentLevel === 4) && !pizzaDropped;
 const dropZeptoNow = (currentLevel === 5 || currentLevel === 6) && !zeptoDropped;
-    const dropMeeshoNow = (currentLevel === 7) && !meeshoDropped;
-    const dropJobNow = (currentLevel === 8) && !jobDropped;
+    const dropMeeshoNow = (currentLevel === 7 || currentLevel === 8 || currentLevel === 9) && !meeshoDropped;
+    const dropJobNow = (currentLevel === 10 || currentLevel === 11) && !jobDropped;
   
 
-    const maxBombs = currentLevel === 1 ? 0 : (currentLevel === 2 ? 1 : 5);
+    let maxBombs = 0;
+if (currentLevel === 1) {
+  maxBombs = 0;
+} else if (currentLevel === 2) {
+  maxBombs = 1;
+} else if (currentLevel === 3 || currentLevel === 4) {
+  maxBombs = 5;
+} else {
+  maxBombs = 5 + (currentLevel - 4) * 2; // Level 5 = 7, Level 6 = 9, etc.
+}
+
     if (bombCount < maxBombs && rand < 0.15) {
   type = 'bomb';
   image = 'bomb 1.png';
@@ -185,7 +205,14 @@ const dropZeptoNow = (currentLevel === 5 || currentLevel === 6) && !zeptoDropped
     let speed = ['pizza', 'job', 'meesho', 'zepto'].includes(type)
       ? 7
       : type === 'diamond'
-        ? (currentLevel === 1 ? 1.9 : 2.5)
+       ? (
+    currentLevel === 1 ? 1.9 :
+    currentLevel >= 2 && currentLevel <= 4 ? 2.5 :
+    currentLevel === 5 ? 3.0 :
+    currentLevel === 6 ? 3.5 :
+    currentLevel === 7 ? 4.0 : 4.5
+  )
+
         : score < 20 ? 2 : score < 40 ? 3 : score < 70 ? 4 : 5;
 
     function fall() {
@@ -248,9 +275,15 @@ const dropZeptoNow = (currentLevel === 5 || currentLevel === 6) && !zeptoDropped
               caught.push({ type: "zepto", label: "Zepto Grocery Deal", value: "10% OFF" });
               zeptoRewardBox.style.display = "flex";
             } else if (type === 'job') {
-              caught.push({ type: "job", label: "Career Boost Deal" });
-              jobRewardBox.style.display = "flex";
-            }
+  caught.push({ type: "job", label: "Career Boost Deal" });
+  if (currentLevel === 11) {
+    gameEnded = true;
+    document.getElementById("finalCongratsScreen").style.display = "flex";
+  } else {
+    jobRewardBox.style.display = "flex";
+  }
+}
+
             localStorage.setItem(userMobileKey, JSON.stringify(caught));
           }
           return;
