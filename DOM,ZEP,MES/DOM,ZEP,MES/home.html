@@ -79,10 +79,13 @@
       border-bottom: 1px solid #aaa;
     }
 
-    #cart-popup ul {
-      list-style: none;
-      padding: 0;
-    }
+  #cart-popup ul {
+  list-style: none;
+  padding: 0;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
 
     #cart-popup li {
       margin-bottom: 5px;
@@ -151,24 +154,27 @@
   }
 
   function toggleCart() {
-    const popup = document.getElementById("cart-popup");
-    const list = document.getElementById("cart-list");
-    list.innerHTML = "";
+  const popup = document.getElementById("cart-popup");
+  const list = document.getElementById("cart-list");
+  list.innerHTML = "";
 
-    const caughtOffers = JSON.parse(localStorage.getItem("caughtOffers") || "[]");
+  const mobile = userData?.mobile || "";
+  const rewardKey = `caughtOffers_${mobile}`;
+  const caughtOffers = JSON.parse(localStorage.getItem(rewardKey) || "[]");
 
-    if (caughtOffers.length === 0) {
-      list.innerHTML = "<li>Your cart is empty!</li>";
-    } else {
-      caughtOffers.forEach((item, index) => {
-        const li = document.createElement("li");
-        li.textContent = `${index + 1}. ${item.label} - ${item.value}`;
-        list.appendChild(li);
-      });
-    }
-
-    popup.style.display = "block";
+  if (caughtOffers.length === 0) {
+    list.innerHTML = "<li>Your cart is empty!</li>";
+  } else {
+    caughtOffers.forEach((item, index) => {
+      const li = document.createElement("li");
+      li.textContent = `${index + 1}. ${item.label} - ${item.value}`;
+      list.appendChild(li);
+    });
   }
+
+  popup.style.display = "block";
+}
+
 
   function closeCart() {
     document.getElementById("cart-popup").style.display = "none";
