@@ -6,6 +6,10 @@
   <title>Login - Catch the Offer</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"> 
   <style>
+       * {
+      box-sizing: border-box;
+    }
+
     body {
       background: url('background .jpg') no-repeat center center fixed;
       background-size: cover;
@@ -15,47 +19,52 @@
       justify-content: center;
       align-items: center;
       height: 100vh;
-      overflow: hidden;
+      padding: 0 20px;
       color: white;
     }
 
     .login-box {
       background: rgba(0, 0, 0, 0.7);
-      padding: 50px;
+      padding: 40px 30px;
       border-radius: 12px;
       text-align: center;
       box-shadow: 0 0 15px #00ffcc;
-      max-width: 550px;
-      width: 90%;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .login-box h2 {
+      margin-bottom: 20px;
+      font-size: 22px;
     }
 
     .login-box input {
-      width: 90%;
+      width: 100%;
       padding: 14px;
-      margin: 12px 0;
+      margin: 10px 0;
       border: none;
       border-radius: 6px;
-      font-size: 18px;
+      font-size: 16px;
     }
 
     .login-box button {
-      padding: 14px 30px;
+      padding: 14px;
       background: #00ffff;
       border: none;
       color: #000;
       border-radius: 6px;
       cursor: pointer;
       font-size: 18px;
-      width: 90%;
+      width: 100%;
       box-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
       transition: all 0.3s ease;
+      margin-top: 10px;
     }
 
     .login-box button:hover {
       background: #1fffff;
       box-shadow: 0 0 15px #00ffff, 0 0 30px #00ffff;
     }
-
     #errorMsg {
       color: red;
       font-weight: bold;
@@ -72,7 +81,7 @@
     <div id="errorMsg"></div>
   </div>
 
-  <script>
+<script>
 document.getElementById("loginBtn").addEventListener("click", () => {
   const username = document.getElementById("username").value.trim();
   const mobile = document.getElementById("phone").value.trim();
@@ -87,20 +96,24 @@ document.getElementById("loginBtn").addEventListener("click", () => {
 
   const users = JSON.parse(localStorage.getItem("gameUsers")) || [];
 
-  const mobileExists = users.some(user => user.mobile === mobile);
+  const existingUser = users.find(user => user.mobile === mobile);
 
-  if (mobileExists) {
-    errorMsg.textContent = "❌ This mobile number is already taken.";
-    return;
+  if (existingUser) {
+    if (existingUser.username !== username) {
+      errorMsg.textContent = "❌ This number is already registered with a different name.";
+      return;
+    }
+    // same number & same name: allow login
+  } else {
+    // new user: save it
+    users.push({ username, mobile });
+    localStorage.setItem("gameUsers", JSON.stringify(users));
   }
 
-  users.push({ username, mobile });
-  localStorage.setItem("gameUsers", JSON.stringify(users));
   localStorage.setItem("currentUser", JSON.stringify({ username, mobile }));
-
   window.location.href = "home.html";
 });
+</script>
 
-  </script>
 </body>
 </html>
