@@ -43,6 +43,10 @@ let jobDropped = false;
 let meeshoDropped = false;
 let zeptoDropped = false;
 
+// 👤 Get current user for reward storage
+const currentUser = JSON.parse(localStorage.getItem("currentUser") || "{}");
+const userMobileKey = currentUser.mobile ? `caughtOffers_${currentUser.mobile}` : "caughtOffers_guest";
+
 function resetLevelCounts() {
   bombCount = 0;
   pizzaDropped = false;
@@ -109,10 +113,9 @@ function checkLevelTransition() {
   for (let i = 0; i < levels.length; i++) {
     if (score >= levels[i] && currentLevel < 8 - i) {
       currentLevel = 8 - i;
-      maxLives = Math.min(2 + currentLevel, 10); // max lives per level, capped at 10
+      maxLives = Math.min(2 + currentLevel, 10);
       resetLevelCounts();
       showLevelImage(currentLevel);
-
       if (lives < maxLives) {
         lives++;
         const newHeart = document.createElement("img");
@@ -120,7 +123,6 @@ function checkLevelTransition() {
         newHeart.classList.add("heart");
         document.getElementById("hearts").appendChild(newHeart);
       }
-
       break;
     }
   }
@@ -143,31 +145,36 @@ function createItem() {
     let image = 'diamond.png';
     diamondCount++;
 
-    const dropPizzaNow = (currentLevel === 3 || currentLevel === 4) && !pizzaDropped;
     const rand = Math.random();
+
+const dropPizzaNow = (currentLevel === 3 || currentLevel === 4) && !pizzaDropped;
+const dropZeptoNow = (currentLevel === 5 || currentLevel === 6) && !zeptoDropped;
+    const dropMeeshoNow = (currentLevel === 7) && !meeshoDropped;
+    const dropJobNow = (currentLevel === 8) && !jobDropped;
+  
 
     const maxBombs = currentLevel === 1 ? 0 : (currentLevel === 2 ? 1 : 5);
     if (bombCount < maxBombs && rand < 0.15) {
-      type = 'bomb';
-      image = 'bomb 1.png';
-      bombCount++;
-    } else if (dropPizzaNow && rand < 0.3) {
-      type = 'pizza';
-      image = 'dominos.png';
-      pizzaDropped = true;
-    } else if (score >= 120 && score < 150 && !jobDropped && rand < 0.08) {
-      type = 'job';
-      image = 'job.png';
-      jobDropped = true;
-    } else if (score >= 150 && score < 180 && !meeshoDropped && rand < 0.08) {
-      type = 'meesho';
-      image = 'meesho.png';
-      meeshoDropped = true;
-    } else if (score >= 180 && score < 200 && !zeptoDropped && rand < 0.08) {
-      type = 'zepto';
-      image = 'zepto.png';
-      zeptoDropped = true;
-    }
+  type = 'bomb';
+  image = 'bomb 1.png';
+  bombCount++;
+} else if (dropPizzaNow && rand < 0.5) {
+  type = 'pizza';
+  image = 'dominos.png';
+  pizzaDropped = true;
+} else if (dropZeptoNow && rand < 0.5) {
+  type = 'zepto';
+  image = 'zepto.png';
+  zeptoDropped = true;
+} else if (dropMeeshoNow && rand < 0.5) {
+  type = 'meesho';
+  image = 'meesho.png';
+  meeshoDropped = true;
+} else if (dropJobNow && rand < 0.5) {
+  type = 'job';
+  image = 'job.png';
+  jobDropped = true;
+}
 
     item.dataset.type = type;
     item.style.backgroundImage = `url('${image}')`;
@@ -179,13 +186,7 @@ function createItem() {
       ? 7
       : type === 'diamond'
         ? (currentLevel === 1 ? 1.9 : 2.5)
-        : score < 20
-          ? 2
-          : score < 40
-            ? 3
-            : score < 70
-              ? 4
-              : 5;
+        : score < 20 ? 2 : score < 40 ? 3 : score < 70 ? 4 : 5;
 
     function fall() {
       if (gameEnded || gamePaused) {
@@ -236,7 +237,7 @@ function createItem() {
             gamePaused = true;
             gameContainer.style.display = "none";
 
-            let caught = JSON.parse(localStorage.getItem("caughtOffers") || "[]");
+            let caught = JSON.parse(localStorage.getItem(userMobileKey) || "[]");
             if (type === 'pizza') {
               caught.push({ type: "dominos", label: "Dominos Job Reward", value: "5% OFF" });
               pizzaRewardBox.style.display = "flex";
@@ -247,10 +248,10 @@ function createItem() {
               caught.push({ type: "zepto", label: "Zepto Grocery Deal", value: "10% OFF" });
               zeptoRewardBox.style.display = "flex";
             } else if (type === 'job') {
-              caught.push({ type: "job", label: "Career Boost Deal", value: "Flat 15% OFF" });
+              caught.push({ type: "job", label: "Career Boost Deal" });
               jobRewardBox.style.display = "flex";
             }
-            localStorage.setItem("caughtOffers", JSON.stringify(caught));
+            localStorage.setItem(userMobileKey, JSON.stringify(caught));
           }
           return;
         }
