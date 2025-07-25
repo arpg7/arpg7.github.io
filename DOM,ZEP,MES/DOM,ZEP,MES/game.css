@@ -326,7 +326,7 @@
 }
 
 /* Level Transition Animation */
-#levelTransition {
+/*#levelTransition {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -334,7 +334,20 @@
   z-index: 999;
   display: none;
   animation: fadeScale 1.5s ease-in-out;
-}
+}*/
+ #score {
+      background: rgba(0, 0, 0, 0.5);
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 1.2em;
+      font-weight: bold;
+      box-shadow: 0 0 10px #ffff00, 0 0 20px #ffff00;
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      color: white;
+    }
+
 
 @keyframes fadeScale {
   0% {
