@@ -181,68 +181,104 @@ else if (type === 'diamond') {
 
 
   function fall() {
-    if (gameEnded || gamePaused) {
-      item.remove();
-      return;
+  if (gameEnded || gamePaused) {
+    item.remove();
+    return;
+  }
+
+  const top = parseFloat(item.style.top);
+  if (top + item.offsetHeight < window.innerHeight) {
+    item.style.top = top + speed + 'px';
+    item.style.zIndex = '5';
+
+    if (isCaught(item)) {
+      if (type === 'diamond') {
+        score++;
+        scoreDisplay.textContent = 'Score: ' + score;
+        catchSound.play();
+        item.remove();
+
+        consecutiveCatches++;
+        if (consecutiveCatches === 5 && lives < maxLives) {
+          lives++;
+          const newHeart = document.createElement("img");
+          newHeart.src = "red heart.png";
+          newHeart.classList.add("heart");
+          document.getElementById("hearts").appendChild(newHeart);
+          consecutiveCatches = 0;
+        }
+
+      } else if (type === 'bomb') {
+        crashSound.play();
+        item.remove();
+        gameEnded = true;
+        gameOver();
+
+      } else {
+        // ✅ REWARD (pizza, meesho, etc.)
+        catchSound.play();
+        item.remove();
+        gamePaused = true;
+        gameContainer.style.display = "none";
+
+        // 🔥 STORE CAUGHT REWARD TO LOCALSTORAGE
+        const currentUser = JSON.parse(localStorage.getItem("currentUser") || "{}");
+        const userMobileKey = currentUser.mobile ? `caughtOffers_${currentUser.mobile}` : "caughtOffers_guest";
+        const caughtOffers = JSON.parse(localStorage.getItem(userMobileKey) || "[]");
+
+        let rewardLabel = "", rewardValue = "";
+
+        if (type === 'pizza') {
+          rewardLabel = "Pizza Offer";
+          rewardValue = "Flat 50% off on your next order!";
+          pizzaRewardBox.style.display = "flex";
+        } else if (type === 'meesho') {
+          rewardLabel = "Meesho Discount";
+          rewardValue = "₹100 off on your first purchase!";
+          meeshoRewardBox.style.display = "flex";
+        } else if (type === 'zepto') {
+          rewardLabel = "Zepto Reward";
+          rewardValue = "Free delivery for 7 days!";
+          zeptoRewardBox.style.display = "flex";
+        } else if (type === 'job') {
+          rewardLabel = "Job Hunt Bonus";
+          rewardValue = "Get priority access to internships!";
+          jobRewardBox.style.display = "flex";
+        }
+
+        // Save the reward to localStorage
+        if (rewardLabel && rewardValue) {
+          caughtOffers.push({ label: rewardLabel, value: rewardValue });
+          localStorage.setItem(userMobileKey, JSON.stringify(caughtOffers));
+        }
+      }
+
+    } else {
+      requestAnimationFrame(fall);
     }
 
-    const top = parseFloat(item.style.top);
-    if (top + item.offsetHeight < window.innerHeight) {
-      item.style.top = top + speed + 'px';
-      item.style.zIndex = '5';
+  } else {
+    item.remove();
 
-      if (isCaught(item)) {
-        if (type === 'diamond') {
-          score++;
-          scoreDisplay.textContent = 'Score: ' + score;
-          catchSound.play();
-          item.remove();
-
-          consecutiveCatches++;
-          if (consecutiveCatches === 5 && lives < maxLives) {
-            lives++;
-            const newHeart = document.createElement("img");
-            newHeart.src = "red heart.png";
-            newHeart.classList.add("heart");
-            document.getElementById("hearts").appendChild(newHeart);
-            consecutiveCatches = 0;
-          }
-        } else if (type === 'bomb') {
-          crashSound.play();
-          item.remove();
-          gameEnded = true;
-          gameOver();
-        } else {
-          catchSound.play();
-          item.remove();
-          gamePaused = true;
-          gameContainer.style.display = "none";
-          if (type === 'pizza') pizzaRewardBox.style.display = "flex";
-          else if (type === 'meesho') meeshoRewardBox.style.display = "flex";
-          else if (type === 'zepto') zeptoRewardBox.style.display = "flex";
-          else if (type === 'job') jobRewardBox.style.display = "flex";
+    if (type === 'diamond') {
+      if (lives > 0) {
+        lives--;
+        const heartElems = document.getElementsByClassName("heart");
+        if (heartElems.length > 0) {
+          document.getElementById("hearts").removeChild(heartElems[heartElems.length - 1]);
         }
-      } else {
-        requestAnimationFrame(fall);
       }
-    } else {
-      item.remove();
-      if (type === 'diamond') {
-        if (lives > 0) {
-          lives--;
-          const heartElems = document.getElementsByClassName("heart");
-          if (heartElems.length > 0) {
-            document.getElementById("hearts").removeChild(heartElems[heartElems.length - 1]);
-          }
-        }
-        consecutiveCatches = 0;
-        if (lives === 0) {
-          gameEnded = true;
-          gameOver();
-        }
+
+      consecutiveCatches = 0;
+
+      if (lives === 0) {
+        gameEnded = true;
+        gameOver();
       }
     }
   }
+}
+
   fall();
 }
 
