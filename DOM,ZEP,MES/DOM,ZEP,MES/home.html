@@ -70,7 +70,7 @@
       display: none;
       width: 250px;
       max-height: 300px;
-      box-shadow: 0 0 10px #00ffff;
+     box-shadow: 0 0 15px #ffff00;
       z-index: 100;
     }
 
@@ -93,13 +93,26 @@
 
     #cart-popup button, #account-box button {
       margin-top: 10px;
-      background: #dc3545;
+      background: #FF6699;
       color: white;
       border: none;
       padding: 8px 12px;
       border-radius: 5px;
       cursor: pointer;
     }
+    .redeem-btn {
+  margin-left: 10px;
+  padding: 3px 8px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.redeem-btn:hover {
+  background-color: #45a049;
+}
+
   </style>
 </head>
 <body>
@@ -134,55 +147,129 @@
 
 <script>
   // 🛡️ Redirect if user not logged in
-  const storedData = JSON.parse(localStorage.getItem("currentUser"));
-  if (!storedData || !storedData.username || !storedData.mobile) {
-    window.location.href = "login.html";
+const storedData = JSON.parse(localStorage.getItem("currentUser"));
+if (!storedData || !storedData.username || !storedData.mobile) {
+  window.location.href = "login.html";
+}
+
+const userData = storedData;
+
+function showAccount() {
+  document.getElementById("cart-popup").style.display = "none";
+  const box = document.getElementById("account-box");
+  const details = document.getElementById("account-details");
+  details.innerHTML = `Name: ${userData.username}<br>Phone: ${userData.mobile}`;
+  box.style.display = "block";
+}
+
+function closeAccount() {
+  document.getElementById("account-box").style.display = "none";
+}
+
+function toggleCart() {
+  document.getElementById("account-box").style.display = "none";
+
+  const popup = document.getElementById("cart-popup");
+  const list = document.getElementById("cart-list");
+  list.innerHTML = "";
+
+  const mobile = userData?.mobile || "";
+  const rewardKey = `caughtOffers_${mobile}`;
+  const caughtOffers = JSON.parse(localStorage.getItem(rewardKey) || "[]");
+
+  if (caughtOffers.length === 0) {
+    list.innerHTML = "<li>Your cart is empty!</li>";
+  } else {
+    caughtOffers.forEach((item, index) => {
+      const li = document.createElement("li");
+
+const alreadyRedeemed = caughtOffers.some(offer => offer.redeemed);
+
+let buttonHTML = "";
+if (!alreadyRedeemed) {
+  buttonHTML = `
+    <button onclick="redeemOffer('${item.type}', ${index})"
+      style="margin-left: 10px; padding: 4px 8px; font-size: 13px;
+      background-color: #28a745; color: white; border: none;
+      border-radius: 4px; cursor: pointer;">Redeem</button>
+  `;
+} else if (item.redeemed) {
+  buttonHTML = `
+    <button disabled
+      style="margin-left: 10px; padding: 4px 8px; font-size: 13px;
+      background-color: #999; color: white; border: none;
+      border-radius: 4px; cursor: default;">Redeemed</button>
+  `;
+}
+
+li.innerHTML = `${index + 1}. ${item.label} - ${item.value || ""} ${buttonHTML}`;
+
+      list.appendChild(li);
+    });
   }
 
-  const userData = storedData;
+  popup.style.display = "block";
+}
 
-  function showAccount() {
-    // Hide cart popup first
-    document.getElementById("cart-popup").style.display = "none";
+function closeCart() {
+  document.getElementById("cart-popup").style.display = "none";
+}
 
-    const box = document.getElementById("account-box");
-    const details = document.getElementById("account-details");
-    details.innerHTML = `Name: ${userData.username}<br>Phone: ${userData.mobile}`;
-    box.style.display = "block";
-  }
+// 🎯 Reward logic (where you push to caughtOffers)
+function handleRewardCatch(type, currentLevel) {
+  const userMobileKey = `caughtOffers_${userData.mobile}`;
+  let caught = JSON.parse(localStorage.getItem(userMobileKey) || "[]");
 
-  function closeAccount() {
-    document.getElementById("account-box").style.display = "none";
-  }
-
-  function toggleCart() {
-    // Hide account popup first
-    document.getElementById("account-box").style.display = "none";
-
-    const popup = document.getElementById("cart-popup");
-    const list = document.getElementById("cart-list");
-    list.innerHTML = "";
-
-    const mobile = userData?.mobile || "";
-    const rewardKey = `caughtOffers_${mobile}`;
-    const caughtOffers = JSON.parse(localStorage.getItem(rewardKey) || "[]");
-
-    if (caughtOffers.length === 0) {
-      list.innerHTML = "<li>Your cart is empty!</li>";
+  if (type === 'pizza') {
+    caught.push({ type: "dominos", label: "Dominos Reward", value: "5% OFF" });
+    pizzaRewardBox.style.display = "flex";
+  } else if (type === 'meesho') {
+    caught.push({ type: "meesho", label: "Meesho Trend Offer", value: "7% OFF" });
+    meeshoRewardBox.style.display = "flex";
+  } else if (type === 'zepto') {
+    caught.push({ type: "zepto", label: "Zepto Grocery Deal", value: "10% OFF" });
+    zeptoRewardBox.style.display = "flex";
+  } else if (type === 'job') {
+    caught.push({ type: "job", label: "Career Boost Deal", value: "Premium Offer" });
+    if (currentLevel === 11) {
+      gameEnded = true;
+      document.getElementById("finalCongratsScreen").style.display = "flex";
     } else {
-      caughtOffers.forEach((item, index) => {
-        const li = document.createElement("li");
-        li.textContent = `${index + 1}. ${item.label} - ${item.value}`;
-        list.appendChild(li);
-      });
+      jobRewardBox.style.display = "flex";
     }
-
-    popup.style.display = "block";
   }
 
-  function closeCart() {
-    document.getElementById("cart-popup").style.display = "none";
-  }
+  localStorage.setItem(userMobileKey, JSON.stringify(caught));
+}
+
+function redeemOffer(type, index) {
+  const mobile = userData?.mobile || "";
+  const rewardKey = `caughtOffers_${mobile}`;
+  let caughtOffers = JSON.parse(localStorage.getItem(rewardKey) || "[]");
+
+  // Mark the selected reward as redeemed
+  caughtOffers[index].redeemed = true;
+
+  // Save back to localStorage
+  localStorage.setItem(rewardKey, JSON.stringify(caughtOffers));
+
+  alert(`You redeemed the ${type.toUpperCase()} offer!`);
+
+  // Disable all other redeem buttons
+  const allButtons = document.querySelectorAll('#cart-list button');
+  allButtons.forEach((btn, i) => {
+    if (i !== index) {
+      btn.remove(); // Remove other redeem buttons
+    } else {
+      btn.disabled = true; // Disable this one
+      btn.textContent = "Redeemed";
+      btn.style.backgroundColor = "#999";
+      btn.style.cursor = "default";
+    }
+  });
+}
+
+
 </script>
 
 
