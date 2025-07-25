@@ -1,5 +1,4 @@
-// ✅ Use this full code to replace your existing JS
-// ELEMENTS
+// ✅ ELEMENTS
 const basket = document.getElementById('basket');
 const scoreDisplay = document.getElementById('score');
 const catchSound = document.getElementById('catch-sound');
@@ -18,12 +17,9 @@ const pizzaContinueBtn = document.getElementById("dominosContinueBtn");
 const meeshoContinueBtn = document.getElementById("meeshoContinueBtn");
 const zeptoContinueBtn = document.getElementById("zeptoContinueBtn");
 const jobContinueBtn = document.getElementById("jobContinueBtn");
-
-const levelIndicator = document.getElementById("level-indicator");
-const levelImage = document.getElementById("levelImage");
 const restartBtn = document.getElementById("restartBtn");
 
-// GAME STATE
+// ✅ GAME STATE
 let lives = 3;
 let maxLives = 3;
 let score = 0;
@@ -34,61 +30,57 @@ let gameEnded = false;
 let consecutiveCatches = 0;
 let diamondCount = 0;
 let gamePaused = true;
-let currentLevel = 0;
 let bombCount = 0;
-let dropStep = 0;
 
 let pizzaDropped = false;
 let jobDropped = false;
 let meeshoDropped = false;
 let zeptoDropped = false;
+let pizzaDropped2 = false;
+let zeptoDropped2 = false;
+let meeshoDropped2 = false;
+let jobDropped2 = false;
 
-// 👤 Get current user for reward storage
-const currentUser = JSON.parse(localStorage.getItem("currentUser") || "{}");
-const userMobileKey = currentUser.mobile ? `caughtOffers_${currentUser.mobile}` : "caughtOffers_guest";
-
-function resetLevelCounts() {
-  bombCount = 0;
-  pizzaDropped = false;
-  jobDropped = false;
-  meeshoDropped = false;
-  zeptoDropped = false;
-}
-
-function showLevelImage(level, callback) {
-  gamePaused = true;
-  levelImage.src = `level ${level}.png`;
-  levelIndicator.style.display = "block";
-  setTimeout(() => {
-    levelIndicator.style.display = "none";
-    gamePaused = false;
-    if (callback) callback();
-  }, 1500);
-}
+let previousDiamondX = [];
 
 window.onload = () => {
   gameContainer.style.display = "block";
   basketX = window.innerWidth / 2 - basket.offsetWidth / 2;
   basket.style.left = basketX + "px";
+  gamePaused = false;
 
-  currentLevel = 1;
-  resetLevelCounts();
-  showLevelImage(1, () => {
-    gamePaused = false;
-    setInterval(() => {
-      if (!gameEnded && !gamePaused) createItem();
-    }, fallInterval);
-  });
+  setInterval(() => {
+    if (!gameEnded && !gamePaused) {
+      const dropCount = Math.floor(Math.random() * 2) + 1; // 1–2 items
+
+      let usedX = [];
+
+      for (let i = 0; i < dropCount; i++) {
+        let posX;
+        let attempts = 0;
+        do {
+          posX = Math.random() * (window.innerWidth - 80);
+          attempts++;
+        } while (usedX.some(x => Math.abs(x - posX) < 100) && attempts < 10);
+        usedX.push(posX);
+        createItem(posX);
+      }
+    }
+  }, fallInterval);
 
   if (restartBtn) {
     restartBtn.addEventListener("click", () => location.reload());
   }
 };
 
-function moveBasket(e) {
+document.addEventListener('keydown', e => {
   if (e.key === 'ArrowLeft') move('left');
   else if (e.key === 'ArrowRight') move('right');
-}
+});
+['click', 'touchstart'].forEach(eventType => {
+  leftBtn?.addEventListener(eventType, () => move('left'));
+  rightBtn?.addEventListener(eventType, () => move('right'));
+});
 
 function move(direction) {
   if (gameEnded || gamePaused) return;
@@ -102,217 +94,156 @@ function move(direction) {
   basket.style.left = basketX + 'px';
 }
 
-document.addEventListener('keydown', moveBasket);
-['click', 'touchstart'].forEach(eventType => {
-  leftBtn?.addEventListener(eventType, () => move('left'));
-  rightBtn?.addEventListener(eventType, () => move('right'));
-});
-
-function checkLevelTransition() {
-  const levels = [250, 220, 200, 180, 150, 120, 100, 70, 40, 20, 0]; // 11 levels
-  for (let i = 0; i < levels.length; i++) {
-    if (score >= levels[i] && currentLevel < 11 - i) {
-      currentLevel = 11 - i;
-      maxLives = Math.min(2 + currentLevel, 10);
-      resetLevelCounts();
-      showLevelImage(currentLevel);
-      if (lives < maxLives) {
-        lives++;
-        const newHeart = document.createElement("img");
-        newHeart.src = "red heart.png";
-        newHeart.classList.add("heart");
-        document.getElementById("hearts").appendChild(newHeart);
-      }
-      break;
-    }
-  }
-}
-
-
-function createItem() {
+function createItem(forcedX = null) {
   if (gameEnded || gamePaused) return;
 
- let itemsToDrop = 2;
-if (currentLevel <= 2) {
-  itemsToDrop = Math.floor(Math.random() * 2) + 1; // 1-2 items
-} else if (currentLevel <= 4) {
-  itemsToDrop = Math.floor(Math.random() * 2) + 2; // 2-3 items
-} else if (currentLevel <= 6) {
-  itemsToDrop = Math.floor(Math.random() * 3) + 2; // 2-4 items
-} else {
-  itemsToDrop = Math.floor(Math.random() * 3) + 3; // 3-5 items
-}
+  const item = document.createElement('div');
+  item.classList.add('falling-item');
 
-  for (let i = 0; i < itemsToDrop; i++) {
-    const posX = Math.random() * (window.innerWidth - 80);
-    const offsetY = Math.floor(Math.random() * 60);
-    const posY = 0 + offsetY;
+  const posX = forcedX !== null ? forcedX : Math.random() * (window.innerWidth - 80);
+  const posY = Math.floor(Math.random() * 120); // more vertical randomness
 
-    const item = document.createElement('div');
-    item.classList.add('falling-item');
+  item.style.left = posX + 'px';
+  item.style.top = posY + 'px';
 
-    let type = 'diamond';
-    let image = 'diamond.png';
-    diamondCount++;
+  let type = 'diamond';
+  let image = 'diamond.png';
+  const rand = Math.random();
 
-    const rand = Math.random();
-
-const dropPizzaNow = (currentLevel === 3 || currentLevel === 4) && !pizzaDropped;
-const dropZeptoNow = (currentLevel === 5 || currentLevel === 6) && !zeptoDropped;
-    const dropMeeshoNow = (currentLevel === 7 || currentLevel === 8 || currentLevel === 9) && !meeshoDropped;
-    const dropJobNow = (currentLevel === 10 || currentLevel === 11) && !jobDropped;
-  
-
-    let maxBombs = 0;
-if (currentLevel === 1) {
-  maxBombs = 0;
-} else if (currentLevel === 2) {
-  maxBombs = 1;
-} else if (currentLevel === 3 || currentLevel === 4) {
-  maxBombs = 5;
-} else {
-  maxBombs = 5 + (currentLevel - 4) * 2; // Level 5 = 7, Level 6 = 9, etc.
-}
-
-    if (bombCount < maxBombs && rand < 0.15) {
-  type = 'bomb';
-  image = 'bomb 1.png';
-  bombCount++;
-} else if (dropPizzaNow && rand < 0.5) {
+  const bombLimit = score < 40 ? 2 : Math.floor((score - 40) / 20) + 5;
+  if (rand < 0.15 && score > 10 && bombCount < bombLimit) {
+    type = 'bomb';
+    image = 'bomb 1.png';
+    bombCount++;
+  } else if (score >= 40 && score < 60 && !pizzaDropped) {
   type = 'pizza';
   image = 'dominos.png';
   pizzaDropped = true;
-} else if (dropZeptoNow && rand < 0.5) {
+} else if (score >= 60 && score < 80 && !pizzaDropped2) {
+  type = 'pizza';
+  image = 'dominos.png';
+  pizzaDropped2 = true;
+} else if (score >= 80 && score < 100 && !zeptoDropped) {
   type = 'zepto';
   image = 'zepto.png';
   zeptoDropped = true;
-} else if (dropMeeshoNow && rand < 0.5) {
+} else if (score >= 100 && score < 120 && !meeshoDropped) {
   type = 'meesho';
   image = 'meesho.png';
   meeshoDropped = true;
-} else if (dropJobNow && rand < 0.5) {
+} else if (score >= 120 && score < 150 && !zeptoDropped2) {
+  type = 'zepto';
+  image = 'zepto.png';
+  zeptoDropped2 = true;
+} else if (score >= 150 && score < 180 && !meeshoDropped2) {
+  type = 'meesho';
+  image = 'meesho.png';
+  meeshoDropped2 = true;
+} else if (score >= 200 && score < 230 && !jobDropped) {
   type = 'job';
   image = 'job.png';
   jobDropped = true;
+} else if (score >= 230 && score < 250 && !jobDropped2) {
+  type = 'job';
+  image = 'job.png';
+  jobDropped2 = true;
 }
 
-    item.dataset.type = type;
-    item.style.backgroundImage = `url('${image}')`;
-    item.style.left = posX + 'px';
-    item.style.top = posY + 'px';
-    gameContainer.appendChild(item);
 
-    let speed = ['pizza', 'job', 'meesho', 'zepto'].includes(type)
-      ? 7
-      : type === 'diamond'
-       ? (
-    currentLevel === 1 ? 1.9 :
-    currentLevel >= 2 && currentLevel <= 4 ? 2.5 :
-    currentLevel === 5 ? 3.0 :
-    currentLevel === 6 ? 3.5 :
-    currentLevel === 7 ? 4.0 : 4.5
-  )
+  item.dataset.type = type;
+  item.style.backgroundImage = `url('${image}')`;
+  gameContainer.appendChild(item);
 
-        : score < 20 ? 2 : score < 40 ? 3 : score < 70 ? 4 : 5;
-
-    function fall() {
-      if (gameEnded || gamePaused) {
-        item.remove();
-        return;
-      }
-
-      const top = parseFloat(item.style.top);
-      if (top + item.offsetHeight < window.innerHeight) {
-        item.style.top = top + speed + 'px';
-        item.style.zIndex = '5';
-
-        if (isCaught(item)) {
-          if (type === 'diamond') {
-            score++;
-            scoreDisplay.textContent = 'Score: ' + score;
-            catchSound.play();
-            item.remove();
-            checkLevelTransition();
-
-            consecutiveCatches++;
-            if (consecutiveCatches === 5 && lives < maxLives) {
-              lives++;
-              const newHeart = document.createElement("img");
-              newHeart.src = "red heart.png";
-              newHeart.classList.add("heart");
-              document.getElementById("hearts").appendChild(newHeart);
-              consecutiveCatches = 0;
-            }
-
-            if (score % 20 === 0 && lives < maxLives) {
-              lives++;
-              const newHeart = document.createElement("img");
-              newHeart.src = "red heart.png";
-              newHeart.classList.add("heart");
-              document.getElementById("hearts").appendChild(newHeart);
-            }
-
-          } else if (type === 'bomb') {
-            crashSound.play();
-            item.remove();
-            gameEnded = true;
-            gameOver();
-            return;
-          } else {
-            catchSound.play();
-            item.remove();
-            gamePaused = true;
-            gameContainer.style.display = "none";
-
-            let caught = JSON.parse(localStorage.getItem(userMobileKey) || "[]");
-            if (type === 'pizza') {
-              caught.push({ type: "dominos", label: "Dominos Job Reward", value: "5% OFF" });
-              pizzaRewardBox.style.display = "flex";
-            } else if (type === 'meesho') {
-              caught.push({ type: "meesho", label: "Meesho Trend Offer", value: "7% OFF" });
-              meeshoRewardBox.style.display = "flex";
-            } else if (type === 'zepto') {
-              caught.push({ type: "zepto", label: "Zepto Grocery Deal", value: "10% OFF" });
-              zeptoRewardBox.style.display = "flex";
-            } else if (type === 'job') {
-  caught.push({ type: "job", label: "Career Boost Deal" });
-  if (currentLevel === 11) {
-    gameEnded = true;
-    document.getElementById("finalCongratsScreen").style.display = "flex";
-  } else {
-    jobRewardBox.style.display = "flex";
+  if (type === 'diamond') {
+    previousDiamondX.push(posX);
+    if (previousDiamondX.length > 10) previousDiamondX.shift();
   }
+
+let speed;
+
+// Reward items always fall at the same speed
+if (['pizza', 'job', 'meesho', 'zepto'].includes(type)) {
+  speed = 7;
+} 
+// Bombs increase speed based on score
+else if (type === 'bomb') {
+  if (score < 40) speed = 2.5;
+  else if (score < 80) speed = 3;
+  else if (score < 120) speed = 4;
+  else if (score < 180) speed = 5;
+  else speed = 6; // faster after 180
+} 
+// Diamonds: constant speed before 100, increase after
+else if (type === 'diamond') {
+  if (score <= 100) speed = 1.8; // same speed from 0 to 100
+  else speed = 2.5; // faster after 100
 }
 
-            localStorage.setItem(userMobileKey, JSON.stringify(caught));
-          }
-          return;
-        }
 
-        requestAnimationFrame(fall);
-      } else {
-        item.remove();
+  function fall() {
+    if (gameEnded || gamePaused) {
+      item.remove();
+      return;
+    }
+
+    const top = parseFloat(item.style.top);
+    if (top + item.offsetHeight < window.innerHeight) {
+      item.style.top = top + speed + 'px';
+      item.style.zIndex = '5';
+
+      if (isCaught(item)) {
         if (type === 'diamond') {
-          const heartsContainer = document.getElementById("hearts");
-          if (lives > 0) {
-            lives--;
-            const heartElems = heartsContainer.getElementsByClassName("heart");
-            if (heartElems.length > 0) {
-              heartsContainer.removeChild(heartElems[heartElems.length - 1]);
-            }
-          }
+          score++;
+          scoreDisplay.textContent = 'Score: ' + score;
+          catchSound.play();
+          item.remove();
 
-          consecutiveCatches = 0;
-          if (lives === 0) {
-            gameEnded = true;
-            gameOver();
+          consecutiveCatches++;
+          if (consecutiveCatches === 5 && lives < maxLives) {
+            lives++;
+            const newHeart = document.createElement("img");
+            newHeart.src = "red heart.png";
+            newHeart.classList.add("heart");
+            document.getElementById("hearts").appendChild(newHeart);
+            consecutiveCatches = 0;
           }
+        } else if (type === 'bomb') {
+          crashSound.play();
+          item.remove();
+          gameEnded = true;
+          gameOver();
+        } else {
+          catchSound.play();
+          item.remove();
+          gamePaused = true;
+          gameContainer.style.display = "none";
+          if (type === 'pizza') pizzaRewardBox.style.display = "flex";
+          else if (type === 'meesho') meeshoRewardBox.style.display = "flex";
+          else if (type === 'zepto') zeptoRewardBox.style.display = "flex";
+          else if (type === 'job') jobRewardBox.style.display = "flex";
+        }
+      } else {
+        requestAnimationFrame(fall);
+      }
+    } else {
+      item.remove();
+      if (type === 'diamond') {
+        if (lives > 0) {
+          lives--;
+          const heartElems = document.getElementsByClassName("heart");
+          if (heartElems.length > 0) {
+            document.getElementById("hearts").removeChild(heartElems[heartElems.length - 1]);
+          }
+        }
+        consecutiveCatches = 0;
+        if (lives === 0) {
+          gameEnded = true;
+          gameOver();
         }
       }
     }
-
-    fall();
   }
+  fall();
 }
 
 function isCaught(item) {
@@ -320,7 +251,6 @@ function isCaught(item) {
   const basketRect = basket.getBoundingClientRect();
   const verticalOffset = 8;
   const horizontalBuffer = 35;
-
   return (
     itemRect.bottom >= basketRect.top + verticalOffset &&
     itemRect.right - horizontalBuffer >= basketRect.left &&
@@ -336,7 +266,7 @@ function gameOver() {
   finalScoreText.textContent = "Your score: " + score;
 }
 
-// Reward continue buttons
+// ✅ Reward Continue Buttons
 pizzaContinueBtn.onclick = () => {
   pizzaRewardBox.style.display = 'none';
   gameContainer.style.display = 'block';
@@ -358,6 +288,7 @@ jobContinueBtn.onclick = () => {
   gamePaused = false;
 };
 
+// ✅ Window Resize Support
 window.addEventListener('resize', () => {
   if (!gameEnded && gameContainer.style.display !== 'none') {
     basketX = Math.min(window.innerWidth - basket.offsetWidth, basketX);
